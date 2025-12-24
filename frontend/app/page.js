@@ -15,13 +15,11 @@ export default function Home() {
   const [sessionId, setSessionId] = useState('');
   const messagesEndRef = useRef(null);
 
-  // Generate sessionId on mount
   useEffect(() => {
     const newSessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     setSessionId(newSessionId);
   }, []);
 
-  // Auto-scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
@@ -41,7 +39,6 @@ export default function Home() {
     setError('');
     setLoading(true);
 
-    // Add user message to UI
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
 
     try {
@@ -50,14 +47,12 @@ export default function Home() {
         sessionId: sessionId
       });
 
-      // Add AI response to UI
       setMessages(prev => [...prev, {
         role: 'ai',
         content: response.data.aiMessage.content
       }]);
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to send message. Please try again.');
-      // Remove user message if error occurs
       setMessages(prev => prev.slice(0, -1));
     } finally {
       setLoading(false);
