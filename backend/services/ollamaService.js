@@ -5,7 +5,6 @@ const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'llama3';
 
 async function chat(messages) {
   try {
-    // Convert 'ai' role to 'assistant' for Ollama API
     const ollamaMessages = messages.map(msg => ({
       role: msg.role === 'ai' ? 'assistant' : msg.role,
       content: msg.content

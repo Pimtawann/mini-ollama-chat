@@ -12,7 +12,14 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showClearModal, setShowClearModal] = useState(false);
+  const [sessionId, setSessionId] = useState('');
   const messagesEndRef = useRef(null);
+
+  // Generate sessionId on mount
+  useEffect(() => {
+    const newSessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    setSessionId(newSessionId);
+  }, []);
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -39,7 +46,8 @@ export default function Home() {
 
     try {
       const response = await axios.post(`${API_URL}/api/chat`, {
-        message: userMessage
+        message: userMessage,
+        sessionId: sessionId
       });
 
       // Add AI response to UI
