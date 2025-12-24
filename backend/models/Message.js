@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const messageSchema = new mongoose.Schema({
+  sessionId: {
+    type: String,
+    required: true,
+    index: true
+  },
   role: {
     type: String,
     required: true,
@@ -18,5 +23,7 @@ const messageSchema = new mongoose.Schema({
 }, {
   versionKey: false
 });
+
+messageSchema.index({ sessionId: 1, createAt: 1 });
 
 module.exports = mongoose.model('Message', messageSchema);
