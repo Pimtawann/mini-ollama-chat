@@ -75,7 +75,7 @@ The Ollama API will be available at `http://localhost:11434`
 
 ### 1. Clone the Repository
 ```bash
-git clone <repository-url>
+git clone https://github.com/Pimtawann/mini-ollama-chat.git
 cd mini-ollama-chat
 ```
 

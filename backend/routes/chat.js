@@ -4,7 +4,6 @@ const Message = require('../models/Message');
 const Session = require('../models/Session');
 const { chat } = require('../services/ollamaService');
 
-// GET all sessions
 router.get('/sessions', async (req, res) => {
   try {
     const sessions = await Session.find().sort({ updatedAt: -1 });
@@ -14,7 +13,6 @@ router.get('/sessions', async (req, res) => {
   }
 });
 
-// POST create new session
 router.post('/sessions', async (req, res) => {
   try {
     const { sessionId, title } = req.body;
@@ -31,7 +29,6 @@ router.post('/sessions', async (req, res) => {
   }
 });
 
-// GET all messages for a session
 router.get('/messages/:sessionId', async (req, res) => {
   try {
     const { sessionId } = req.params;
@@ -42,7 +39,6 @@ router.get('/messages/:sessionId', async (req, res) => {
   }
 });
 
-// POST new chat message
 router.post('/chat', async (req, res) => {
   try {
     const { message, sessionId } = req.body;
@@ -59,14 +55,12 @@ router.post('/chat', async (req, res) => {
       return res.status(400).json({ error: 'Message must not exceed 500 characters' });
     }
 
-    // Verify session exists or create it
     let session = await Session.findOne({ sessionId });
     if (!session) {
       session = new Session({ sessionId });
       await session.save();
     }
 
-    // Save user message to database
     const userMessage = new Message({
       sessionId,
       role: 'user',
@@ -74,19 +68,15 @@ router.post('/chat', async (req, res) => {
     });
     await userMessage.save();
 
-    // Get all previous messages for this session
     const allMessages = await Message.find({ sessionId }).sort({ createAt: 1 });
 
-    // Format messages for Ollama API
     const ollamaMessages = allMessages.map(msg => ({
       role: msg.role,
       content: msg.content
     }));
 
-    // Get response from Ollama
     const aiResponse = await chat(ollamaMessages);
 
-    // Save AI response to database
     const aiMessage = new Message({
       sessionId,
       role: 'ai',
@@ -94,7 +84,6 @@ router.post('/chat', async (req, res) => {
     });
     await aiMessage.save();
 
-    // Update session's updatedAt
     session.updatedAt = Date.now();
     await session.save();
 
@@ -108,7 +97,6 @@ router.post('/chat', async (req, res) => {
   }
 });
 
-// DELETE clear session messages
 router.delete('/sessions/:sessionId/messages', async (req, res) => {
   try {
     const { sessionId } = req.params;
@@ -119,7 +107,6 @@ router.delete('/sessions/:sessionId/messages', async (req, res) => {
   }
 });
 
-// DELETE session
 router.delete('/sessions/:sessionId', async (req, res) => {
   try {
     const { sessionId } = req.params;
